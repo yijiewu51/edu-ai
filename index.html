@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI职业诊断报告 · 免费 · 30秒生成</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+    body { font-family: 'Noto Sans SC', system-ui, sans-serif; }
+    .fade-in { animation: fadeIn 0.5s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .skill-chip { transition: all 0.15s ease; }
+    .skill-chip input:checked + label {
+      background-color: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Hero -->
+  <header class="bg-gradient-to-br from-blue-700 to-purple-800 text-white py-10 px-4 text-center">
+    <div class="max-w-2xl mx-auto">
+      <div class="inline-block bg-white/20 text-white text-xs px-3 py-1 rounded-full mb-4">
+        🆓 完全免费 · AI驱动 · 专为30-45岁职场人设计
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-3">AI职业诊断报告</h1>
+      <p class="text-blue-200 text-base sm:text-lg">
+        填写你的职业信息，AI在30秒内分析你的技能缺口<br class="hidden sm:block"/>并生成专属转型路径
+      </p>
+      <div class="mt-5 text-sm text-blue-300" id="counter-bar">
+        已帮助 <span id="submission-count" class="text-white font-bold">—</span> 位职场人完成诊断
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- Form Card -->
+    <div id="form-section" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+      <h2 class="text-xl font-bold text-gray-900 mb-6">填写你的职业信息</h2>
+      <form id="diagnosis-form" class="space-y-6">
+
+        <!-- Job Title -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            当前职位 <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="job_title" name="job_title" required maxlength="100"
+            placeholder="如：销售经理、财务主管、生产线工长、行政专员"
+            class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        </div>
+
+        <!-- Years of Experience -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-3">
+            工作年限 <span class="text-red-500">*</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="years-group">
+            <label class="cursor-pointer">
+              <input type="radio" name="years_exp" value="1-3年" class="sr-only" />
+              <span class="block text-center border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors radio-btn">1-3年</span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="years_exp" value="3-5年" class="sr-only" />
+              <span class="block text-center border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors radio-btn">3-5年</span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="years_exp" value="5-10年" class="sr-only" />
+              <span class="block text-center border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors radio-btn">5-10年</span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="years_exp" value="10年以上" class="sr-only" />
+              <span class="block text-center border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors radio-btn">10年以上</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Age Range -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-3">
+            年龄段 <span class="text-red-500">*</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="age-group">
+            <label class="cursor-pointer">
+              <input type="radio" name="age_range" value="30-35岁" class="sr-only" />
+              <span class="block text-center border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors radio-btn">30-35岁</span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="age_range" value="35-40岁" class="sr-only" />
+              <span class="block text-center border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors radio-btn">35-40岁</span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="age_range" value="40-45岁" class="sr-only" />
+              <span class="block text-center border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors radio-btn">40-45岁</span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="age_range" value="45岁以上" class="sr-only" />
+              <span class="block text-center border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors radio-btn">45岁以上</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Skills Checkboxes -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">
+            现有技能 <span class="text-red-500">*</span>
+          </label>
+          <p class="text-xs text-gray-400 mb-3">选择你目前掌握的技能（可多选）</p>
+
+          <div class="space-y-3">
+            <div>
+              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">办公技能</div>
+              <div class="flex flex-wrap gap-2">
+                <label class="skill-chip"><input type="checkbox" name="skills" value="Excel高级" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">Excel高级</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="PPT制作" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">PPT制作</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="数据透视表" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">数据透视表</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="Word文档" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">Word文档</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="钉钉/企业微信" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">钉钉/企业微信</span></label>
+              </div>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">数字&amp;技术技能</div>
+              <div class="flex flex-wrap gap-2">
+                <label class="skill-chip"><input type="checkbox" name="skills" value="Python基础" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">Python基础</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="SQL数据库" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">SQL数据库</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="短视频运营" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">短视频运营</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="电商运营" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">电商运营</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="直播带货" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">直播带货</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="数据分析" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">数据分析</span></label>
+              </div>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">AI &amp; 新兴技能</div>
+              <div class="flex flex-wrap gap-2">
+                <label class="skill-chip"><input type="checkbox" name="skills" value="AI工具使用" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">AI工具使用</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="提示词工程" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">提示词工程</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="ChatGPT/文心" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">ChatGPT/文心</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="自动化办公" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">自动化办公</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="Power BI" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">Power BI</span></label>
+              </div>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">管理 &amp; 业务技能</div>
+              <div class="flex flex-wrap gap-2">
+                <label class="skill-chip"><input type="checkbox" name="skills" value="项目管理" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">项目管理</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="团队管理" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">团队管理</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="客户关系" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">客户关系</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="预算管理" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">预算管理</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="供应链管理" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">供应链管理</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="财务会计" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">财务会计</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="人力资源" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">人力资源</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="市场营销" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">市场营销</span></label>
+                <label class="skill-chip"><input type="checkbox" name="skills" value="法务合规" class="sr-only" /><span class="block border border-gray-200 rounded-full px-3 py-1 text-xs text-gray-600 cursor-pointer hover:border-blue-400 hover:text-blue-600">法务合规</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Career Goals -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2" for="career_goals">
+            职业目标 &amp; 转型方向 <span class="text-red-500">*</span>
+          </label>
+          <textarea id="career_goals" name="career_goals" required minlength="5" maxlength="1000" rows="4"
+            placeholder="描述你想转型的方向或职业目标，例如：我目前是传统销售，想转到数字营销或数据分析方向，担心自己年龄偏大，技术基础薄弱..."
+            class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+          <div class="text-right text-xs text-gray-400 mt-1" id="char-count">0 / 1000</div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="form-error" class="hidden bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm"></div>
+
+        <!-- Submit -->
+        <button type="submit" id="submit-btn"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-base transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+          开始AI诊断 →
+        </button>
+        <p class="text-center text-xs text-gray-400">约需15-30秒 · 完全免费 · 无需注册</p>
+      </form>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div id="loading-section" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <div>
+            <div class="font-semibold text-gray-900">AI正在分析你的职业数据...</div>
+            <div class="text-xs text-gray-400" id="loading-status">正在评估技能缺口</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="skeleton h-32 w-full"></div>
+          <div class="skeleton h-20 w-4/5"></div>
+          <div class="skeleton h-20 w-3/5"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Output -->
+    <div id="report-section" class="hidden">
+      <div id="report-container" class="fade-in"></div>
+      <div class="mt-4 text-center space-y-3">
+        <p class="text-sm text-gray-500">报告已生成，建议截图保存或分享给朋友</p>
+        <button onclick="resetForm()"
+          class="inline-block bg-white border border-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">
+          为其他职位重新诊断
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="text-center py-8 text-xs text-gray-400 border-t border-gray-100 mt-8">
+    AI职业诊断平台 · 帮助职场人在AI时代找到新方向
+  </footer>
+
+  <script>
+    // ── Session ID ───────────────────────────────────────────────────────
+    function getSessionId() {
+      let id = localStorage.getItem('career_session_id');
+      if (!id) {
+        id = 'sess_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem('career_session_id', id);
+      }
+      return id;
+    }
+
+    // ── Submission Counter ───────────────────────────────────────────────
+    async function loadCounter() {
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        const el = document.getElementById('submission-count');
+        if (el && data.total_submissions !== undefined) {
+          el.textContent = data.total_submissions.toLocaleString('zh-CN');
+        }
+      } catch (_) {}
+    }
+
+    // ── Radio Button Styling ─────────────────────────────────────────────
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const name = radio.name;
+        document.querySelectorAll(`input[name="${name}"] + span`).forEach(span => {
+          span.classList.remove('border-blue-600', 'text-blue-600', 'bg-blue-50', 'font-semibold');
+          span.classList.add('border-gray-200', 'text-gray-600');
+        });
+        const span = radio.nextElementSibling;
+        span.classList.add('border-blue-600', 'text-blue-600', 'bg-blue-50', 'font-semibold');
+        span.classList.remove('border-gray-200', 'text-gray-600');
+      });
+    });
+
+    // ── Skill Chip Styling ───────────────────────────────────────────────
+    document.querySelectorAll('.skill-chip input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const span = cb.nextElementSibling;
+        if (cb.checked) {
+          span.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+          span.classList.remove('text-gray-600', 'border-gray-200');
+        } else {
+          span.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+          span.classList.add('text-gray-600', 'border-gray-200');
+        }
+      });
+    });
+
+    // ── Char Count ───────────────────────────────────────────────────────
+    document.getElementById('career_goals').addEventListener('input', function() {
+      document.getElementById('char-count').textContent = `${this.value.length} / 1000`;
+    });
+
+    // ── Loading Messages ─────────────────────────────────────────────────
+    const LOADING_MSGS = [
+      '正在评估技能缺口...',
+      '分析市场需求趋势...',
+      '生成个性化学习路径...',
+      '计算最优转型方案...',
+      '即将完成，请稍候...',
+    ];
+    let loadingInterval;
+    function startLoadingMessages() {
+      let i = 0;
+      const el = document.getElementById('loading-status');
+      loadingInterval = setInterval(() => {
+        if (el) el.textContent = LOADING_MSGS[i % LOADING_MSGS.length];
+        i++;
+      }, 4000);
+    }
+    function stopLoadingMessages() {
+      clearInterval(loadingInterval);
+    }
+
+    // ── State Helpers ────────────────────────────────────────────────────
+    function showState(state) {
+      document.getElementById('form-section').classList.toggle('hidden', state !== 'form');
+      document.getElementById('loading-section').classList.toggle('hidden', state !== 'loading');
+      document.getElementById('report-section').classList.toggle('hidden', state !== 'report');
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('form-error');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      document.getElementById('submit-btn').disabled = false;
+      document.getElementById('submit-btn').textContent = '开始AI诊断 →';
+    }
+
+    function hideError() {
+      document.getElementById('form-error').classList.add('hidden');
+    }
+
+    function resetForm() {
+      showState('form');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Form Submission ───────────────────────────────────────────────────
+    document.getElementById('diagnosis-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      hideError();
+
+      const form = e.target;
+      const jobTitle = form.job_title.value.trim();
+      const yearsExp = form.querySelector('input[name="years_exp"]:checked')?.value;
+      const ageRange = form.querySelector('input[name="age_range"]:checked')?.value;
+      const skills = [...form.querySelectorAll('input[name="skills"]:checked')].map(cb => cb.value);
+      const careerGoals = form.career_goals.value.trim();
+
+      if (!jobTitle) { showError('请填写当前职位'); return; }
+      if (!yearsExp) { showError('请选择工作年限'); return; }
+      if (!ageRange) { showError('请选择年龄段'); return; }
+      if (skills.length === 0) { showError('请至少选择一项现有技能'); return; }
+      if (careerGoals.length < 5) { showError('请描述你的职业目标（至少5个字）'); return; }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = '生成中...';
+
+      showState('loading');
+      startLoadingMessages();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      const payload = {
+        session_id: getSessionId(),
+        job_title: jobTitle,
+        years_exp: yearsExp,
+        age_range: ageRange,
+        skills,
+        career_goals: careerGoals,
+      };
+
+      try {
+        const res = await fetch('/api/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(errText || `服务器错误 (${res.status})`);
+        }
+
+        const data = await res.json();
+        stopLoadingMessages();
+        document.getElementById('report-container').innerHTML = data.report_html;
+        showState('report');
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+        loadCounter();
+      } catch (err) {
+        stopLoadingMessages();
+        showState('form');
+        let msg = '生成报告时出现问题，请稍后重试';
+        if (err.message.includes('429') || err.message.includes('频繁')) {
+          msg = '请求过于频繁，请60秒后重试';
+        } else if (err.message.includes('500') || err.message.includes('AI服务')) {
+          msg = 'AI服务暂时繁忙，请稍后重试';
+        }
+        showError(msg);
+        btn.disabled = false;
+        btn.textContent = '开始AI诊断 →';
+      }
+    });
+
+    // ── Init ──────────────────────────────────────────────────────────────
+    loadCounter();
+  </script>
+</body>
+</html>
