@@ -118,6 +118,7 @@ async def generate_report_data(req: ReportRequest) -> dict:
         model="deepseek-chat",
         max_tokens=4096,
         temperature=0.7,
+        response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
