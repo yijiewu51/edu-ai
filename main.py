@@ -125,10 +125,11 @@ async def generate_report_data(req: ReportRequest) -> dict:
     )
 
     raw = message.choices[0].message.content
+    print(f"[DEBUG] DeepSeek raw response (first 300 chars): {repr(raw[:300])}")
     try:
         return parse_claude_json(raw)
-    except json.JSONDecodeError:
-        print(f"[ERROR] Failed to parse DeepSeek JSON. Raw response:\n{raw[:500]}")
+    except json.JSONDecodeError as e:
+        print(f"[ERROR] JSON parse failed: {e}. Full raw:\n{raw[:1000]}")
         raise
 
 
