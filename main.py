@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from typing import Literal
 
 import aiosqlite
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
@@ -86,7 +86,10 @@ def parse_claude_json(raw: str) -> dict:
 
 
 async def generate_report_data(req: ReportRequest) -> dict:
-    client = AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    client = AsyncOpenAI(
+        api_key=os.environ.get("DEEPSEEK_API_KEY"),
+        base_url="https://api.deepseek.com",
+    )
 
     skills_str = "、".join(req.skills)
     prompt = f"""用户职业信息：
@@ -111,20 +114,21 @@ async def generate_report_data(req: ReportRequest) -> dict:
   "encouragement": "针对该用户具体情况的个性化鼓励，引用其工作年限和目标，50字左右"
 }}"""
 
-    message = await client.messages.create(
-        model="claude-sonnet-4-6",
+    message = await client.chat.completions.create(
+        model="deepseek-chat",
         max_tokens=4096,
         temperature=0.7,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
     )
 
-    raw = message.content[0].text
+    raw = message.choices[0].message.content
     try:
         return parse_claude_json(raw)
     except json.JSONDecodeError:
-        # Log for debugging and raise
-        print(f"[ERROR] Failed to parse Claude JSON. Raw response:\n{raw[:500]}")
+        print(f"[ERROR] Failed to parse DeepSeek JSON. Raw response:\n{raw[:500]}")
         raise
 
 
